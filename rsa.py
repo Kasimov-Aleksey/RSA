@@ -1,22 +1,25 @@
-#гененрция простых чисел
-
+from random import randint, sample
+import math
 data_rsa ={}
-from random import randint
-def generating_prime_numbers(variables,data_rsa, a, b):
-    for elem in variables:
-        while True:
-            prime_number = randint(a, b)
-            for num in range(2, (prime_number//2)+1):
-                if prime_number % num == 0:
-                    break
-            else:
-                data_rsa[elem] = prime_number
+def generating_prime_numbers_and_test_Fermat(variables, data_rsa, a, b):
+    while True:
+        prime_number = randint(a, b)
+        t = math.ceil(-(math.log(0.0001, 2)))
+        if t > prime_number:
+            t = prime_number
+        list_test_t = sample(range(2, (prime_number - 1)), t)  # шаг1: создаем список Выбираем а[2, n-1]
+        for elem_s in list_test_t:
+            r = elem_s**(prime_number - 1) % prime_number
+            if r != 1:
                 break
-    return data_rsa
+        else:
+            data_rsa[variables] = prime_number
+            return data_rsa
 
 
-def the_product_the_product_of_two_numbers_qp(prime_numbers,data_rsa):
-    data_rsa["n"] = prime_numbers["q"] * prime_numbers["p"]
+
+def the_product_the_product_of_two_numbers_qp(data_rsa):
+    data_rsa["n"] = data_rsa["q"] * data_rsa["p"]
     return data_rsa
 
 def the_Euler_function_of_n(data_rsa):
@@ -38,11 +41,11 @@ def evklid(data_rsa):
             # print(q, r, x, y, a, b, x2, x1, y2, y1)
         if x2 * max(data) + y2 * min(data)!=1:
             data_rsa.clear()
-            pq = generating_prime_numbers(["p"], data_rsa, 75, 345)
-            q = generating_prime_numbers(["q"], data_rsa, 75, 345)
+            pq = generating_prime_numbers_and_test_Fermat("p", data_rsa, 75, 345)
+            q = generating_prime_numbers_and_test_Fermat("q", data_rsa, 75, 345)
             n = the_product_the_product_of_two_numbers_qp(pq, data_rsa)
             φ_from_n = the_Euler_function_of_n(data_rsa)
-            e = generating_prime_numbers(["e"], data_rsa, 45, 120)
+            e = generating_prime_numbers_and_test_Fermat("e", data_rsa, 45, 120)
         else:
             data_rsa["d"] = y2 % max(data)
             return data_rsa
@@ -53,14 +56,14 @@ def generating_key(data_rsa):
     data_keys["close_key"] = (data_rsa["d"])
     return data_keys
 #1
-pq = generating_prime_numbers(["p"], data_rsa, 75, 345)
-q = generating_prime_numbers(["q"], data_rsa, 75, 345)
+p = generating_prime_numbers_and_test_Fermat("p", data_rsa, 75, 345)
+q = generating_prime_numbers_and_test_Fermat("q", data_rsa, 75, 345)
 #2
-n = the_product_the_product_of_two_numbers_qp(pq, data_rsa)
+n = the_product_the_product_of_two_numbers_qp(data_rsa)
 #3
 φ_from_n = the_Euler_function_of_n(data_rsa)
 #4
-e = generating_prime_numbers(["e"], data_rsa, 45, 120)
+e = generating_prime_numbers_and_test_Fermat("e", data_rsa, 45, 120)
 #5
 d = evklid(data_rsa)
 #6

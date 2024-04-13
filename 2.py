@@ -16,6 +16,6 @@ def generating_prime_numbers_and_test_Fermat(variables, data_rsa, a, b):
             data_rsa[variables] = prime_number
             return data_rsa
 
-pq = generating_prime_numbers_and_test_Fermat("p", data_rsa, 75, 345)
+q = generating_prime_numbers_and_test_Fermat("p", data_rsa, 75, 345)
 q = generating_prime_numbers_and_test_Fermat("q", data_rsa, 75, 345)
 print(data_rsa)
