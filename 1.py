@@ -5,7 +5,6 @@ data_rsa ={}
 def generating_prime_numbers_and_test_Fermat(variables, data_rsa):
     bits = 2048
     t = math.ceil(-(math.log(0.0001, 2)))
-    list_test_t = []
     while True:
         prime_number = randprime(2**(bits-1), 2**bits-1)
         if t > prime_number:
@@ -16,18 +15,9 @@ def generating_prime_numbers_and_test_Fermat(variables, data_rsa):
                 flag = False
                 break
         if flag:
-            list_test_t.clear()
-            len_test_t = t
-            while len_test_t > 0:
-                test_t = randint(2, prime_number - 1)
-                if test_t not in list_test_t:
-                   list_test_t.append(test_t)
-                   len_test_t -= 1
-
-
-
-            for test_t in list_test_t:  # Производим t итераций теста Ферма
-                if pow(test_t, prime_number - 1, prime_number) != 1:
+            for _ in range(t):  # Производим t итераций теста Ферма
+                a = randint(2, prime_number - 1)
+                if pow(a, prime_number - 1, prime_number) != 1:
                     flag = False
                     break
         if flag:
@@ -87,6 +77,7 @@ d = evklid(data_rsa)
 #6
 data_keys = generating_key(data_rsa)
 
-# print(data_rsa)
+print(data_rsa)
 print(data_keys)
+
 
