@@ -73,20 +73,24 @@ def generating_key(data_rsa):
     data_keys["open_key"] = (data_rsa["e"], data_rsa["n"])
     data_keys["close_key"] = (data_rsa["d"])
     return data_keys
-#1
-p = generating_prime_numbers_and_test_Fermat("p", data_rsa)
-q = generating_prime_numbers_and_test_Fermat("q", data_rsa)
-#2
-n = the_product_the_product_of_two_numbers_qp(data_rsa)
-#3
-φ_from_n = the_Euler_function_of_n(data_rsa)
-#4
-e = generating_prime_numbers_and_test_Fermat("e", data_rsa)
-#5
-d = evklid(data_rsa)
-#6
-data_keys = generating_key(data_rsa)
 
+def key():
+    # 1
+    p = generating_prime_numbers_and_test_Fermat("p", data_rsa)
+    q = generating_prime_numbers_and_test_Fermat("q", data_rsa)
+    # 2
+    n = the_product_the_product_of_two_numbers_qp(data_rsa)
+    # 3
+    φ_from_n = the_Euler_function_of_n(data_rsa)
+    # 4
+    e = generating_prime_numbers_and_test_Fermat("e", data_rsa)
+    # 5
+    d = evklid(data_rsa)
+    # 6
+    data_keys = generating_key(data_rsa)
+    return data_keys
+
+data_keys = key()
 # print(data_rsa)
-print(data_keys)
+# print(data_keys)
 
