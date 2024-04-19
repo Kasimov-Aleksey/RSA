@@ -6,3 +6,4 @@
 *.out
 *.dump
 *.stackdump
+__pycache__/
