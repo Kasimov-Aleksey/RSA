@@ -74,6 +74,15 @@ def generating_key(data_rsa):
     data_keys["close_key"] = (data_rsa["d"])
     return data_keys
 
+def privat_key(data_keys):
+    with open("privat_key", "w") as privat_key:
+        privat_key.write(str(data_keys["close_key"]))
+
+def open_key(data_keys):
+    with open("open_key", "w") as privat_key:
+        for key in data_keys["open_key"]:
+            privat_key.write(str(key) + "\n")
+
 def key():
     # 1
     p = generating_prime_numbers_and_test_Fermat("p", data_rsa)
@@ -88,6 +97,8 @@ def key():
     d = evklid(data_rsa)
     # 6
     data_keys = generating_key(data_rsa)
+    privat_key(data_keys)
+    open_key(data_keys)
     return data_keys
 
 data_keys = key()
