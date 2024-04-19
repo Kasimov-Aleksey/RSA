@@ -1,4 +1,3 @@
-from rsa import key
 import math
 
 def calling_key_generation():
@@ -7,6 +6,7 @@ def calling_key_generation():
         open_key = open_key.readlines()
         for key in open_key:
             data_keys.append(int(key[:-1]))
+    print(data_keys)
     return data_keys
 
 def len_block(data_keys):
@@ -32,7 +32,7 @@ def conversion_to_cipher(data_blocks, data_keys):
     for binary_number in data_blocks:
         # print(binary_number)
         decimal_number = int("".join(binary_number), 2)
-        print(decimal_number)
+        # print(decimal_number)
         c = pow(decimal_number, data_keys[0], data_keys[1])
         binary_number = "0" + bin(c)[2:]
         data_cripto.append(binary_number)
