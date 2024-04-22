@@ -1,4 +1,4 @@
-from random import randint, sample
+from random import randint
 from sympy import randprime
 import math
 data_rsa ={}
@@ -23,8 +23,6 @@ def generating_prime_numbers_and_test_Fermat(variables, data_rsa):
                 if test_t not in list_test_t:
                    list_test_t.append(test_t)
                    len_test_t -= 1
-
-
 
             for test_t in list_test_t:  # Производим t итераций теста Ферма
                 if pow(test_t, prime_number - 1, prime_number) != 1:
@@ -56,7 +54,6 @@ def evklid(data_rsa):
             x = (x2 - q * x1)
             y = (y2 - q * y1)
             a, b, x2, y2, x1, y1 = b, r, x1, y1, x, y
-            # print(q, r, x, y, a, b, x2, x1, y2, y1)
         if x2 * max(data) + y2 * min(data)!=1:
             data_rsa.clear()
             pq = generating_prime_numbers_and_test_Fermat("p", data_rsa)
@@ -70,18 +67,19 @@ def evklid(data_rsa):
 
 def generating_key(data_rsa):
     data_keys = {}
-    data_keys["open_key"] = (data_rsa["e"], data_rsa["n"])
-    data_keys["close_key"] = (data_rsa["d"])
+    data_keys["public_key"] = (data_rsa["e"], data_rsa["n"])
+    data_keys["private_key"] = (data_rsa["d"], data_rsa["n"])
     return data_keys
 
 def privat_key(data_keys):
-    with open("privat_key", "w") as privat_key:
-        privat_key.write(str(data_keys["close_key"]))
-
-def open_key(data_keys):
-    with open("open_key", "w") as privat_key:
-        for key in data_keys["open_key"]:
+    with open("private_key", "w") as privat_key:
+        for key in data_keys["private_key"]:
             privat_key.write(str(key) + "\n")
+
+def public_key(data_keys):
+    with open("public_key", "w") as public_key:
+        for key in data_keys["public_key"]:
+            public_key.write(str(key) + "\n")
 
 def key():
     # 1
@@ -98,10 +96,7 @@ def key():
     # 6
     data_keys = generating_key(data_rsa)
     privat_key(data_keys)
-    open_key(data_keys)
+    public_key(data_keys)
     return data_keys
 
 data_keys = key()
-# print(data_rsa)
-# print(data_keys)
-

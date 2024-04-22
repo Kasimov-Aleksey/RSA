@@ -1,55 +1,72 @@
 import math
 
+
 def calling_key_generation():
     data_keys = []
-    with open("open_key") as open_key:
-        open_key = open_key.readlines()
-        for key in open_key:
+    with open("public_key") as public_key:
+        public_key = public_key.readlines()
+        for key in public_key:
             data_keys.append(int(key[:-1]))
-    print(data_keys)
+    print({
+        'public_key': data_keys[0],
+        'modulus': data_keys[1],
+        'public_key_length': len(bin(data_keys[0])[2:]),
+        'modulus_length': len(bin(data_keys[1])[2:])
+    })
     return data_keys
 
-def len_block(data_keys):
+
+def get_len_block(data_keys):
     len_block = int(math.log(data_keys[1], 2))
-    # print(len_block)
+    print({
+        'len_block': len_block
+    })
     return len_block
 
-def division_into_blocks(len_block, data_keys):
+
+def splitting_into_bits(len_block):
+    data_blocks_text = []
     with open("input_text", "rb") as input_text:
         input_text = input_text.read()
-        bits = ''.join(format(byte, '08b') for byte in input_text)
-    data_blocks = []
-    if len(bits) % len_block != 0:
-        bits = "0" * (len(bits) % len_block) + bits
+    bits = ''.join(format(byte, '08b') for byte in input_text)
     while len(bits) > 0:
-        data_blocks.append([bits[:len_block]])
-        bits = bits[len_block:]
-    return data_blocks
+        add_bin = bits[-len_block:]
+        add_bit = int(add_bin, 2)
+        data_blocks_text.append(add_bit)
+        bits = bits[:-len_block]
+    return data_blocks_text
 
 
-def conversion_to_cipher(data_blocks, data_keys):
-    data_cripto = []
-    for binary_number in data_blocks:
-        # print(binary_number)
-        decimal_number = int("".join(binary_number), 2)
-        # print(decimal_number)
-        c = pow(decimal_number, data_keys[0], data_keys[1])
-        binary_number = "0" + bin(c)[2:]
-        data_cripto.append(binary_number)
-    return data_cripto
+def mod(data_keys, data_blocks_text):
+    data_num = []
+    for num in data_blocks_text:
+        enc_block_int = pow(num, data_keys[0], data_keys[1])
+        data_num.append(enc_block_int)
+    return data_num
 
-def ciphertext_recording(data_cripto):
-    data_cripto = "".join(data_cripto)
-    # print(data_cripto)
-    with open("cipher_text", "w") as ciphertext:
-        ciphertext.write(data_cripto)
-    return ciphertext
+
+def bits_plus_zero(data_num):
+    data_bits = []
+    for bits in data_num:
+        bit = bin(bits)[2:].zfill(len_block_full)
+        print(len(bit))
+        data_bits.append(bit)
+
+    return data_bits
+
+
+def record_cipher(data_bits):
+    data_bits = "".join(data_bits)
+    data_int = int(data_bits, 2)
+    data_bytes = int.to_bytes(data_int, 3584, byteorder='big', signed=True)
+    with open("cipher_text.txt", "wb") as output_text:
+        output_text.write(data_bytes)
 
 
 data_keys = calling_key_generation()
-len_block = len_block(data_keys)
-data_blocks = division_into_blocks(len_block, data_keys)
-data_cripto = conversion_to_cipher(data_blocks, data_keys)
-# print(data_cripto)
-ciphertext_recording(data_cripto)
-
+len_block = get_len_block(data_keys)
+len_block_full = get_len_block(data_keys) + 1
+data_blocks_text = splitting_into_bits(len_block)
+data_num = mod(data_keys, data_blocks_text)
+data_bits = bits_plus_zero(data_num)
+record_cipher(data_bits)
