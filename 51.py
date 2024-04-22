@@ -17,6 +17,7 @@ def splitting_into_bits(len_block):
         input_text = input_text.read()
     bits = ''.join(format(byte, '08b') for byte in input_text)
     # print(bits)
+
     while len(bits)>0:
         # if len(bits) <= len_block:
         #     bits = "0"*(len_block-len(bits)) + bits
