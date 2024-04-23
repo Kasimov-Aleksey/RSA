@@ -59,8 +59,8 @@ def checker_bits(data_num):
     for bits in data_num:
         bit = bin(bits)[2:].zfill(len_block)
         sum_bits += math.ceil(len(bit)/8)
+    print(sum_bits)
     return sum_bits
-
 
 
 
