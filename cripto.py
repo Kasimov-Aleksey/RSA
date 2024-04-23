@@ -54,11 +54,21 @@ def bits_plus_zero(data_num):
 
     return data_bits
 
+def checker_bits(data_num):
+    sum_bits = 0
+    for bits in data_num:
+        bit = bin(bits)[2:].zfill(len_block)
+        sum_bits += math.ceil(len(bit)/8)
+    return sum_bits
 
-def record_cipher(data_bits):
+
+
+
+
+def record_cipher(data_bits, sum_bits):
     data_bits = "".join(data_bits)
     data_int = int(data_bits, 2)
-    data_bytes = int.to_bytes(data_int, 3584, byteorder='big', signed=True)
+    data_bytes = int.to_bytes(data_int, sum_bits, byteorder='big', signed=True)
     with open("cipher_text.txt", "wb") as output_text:
         output_text.write(data_bytes)
 
@@ -69,4 +79,5 @@ len_block_full = get_len_block(data_keys) + 1
 data_blocks_text = splitting_into_bits(len_block)
 data_num = mod(data_keys, data_blocks_text)
 data_bits = bits_plus_zero(data_num)
-record_cipher(data_bits)
+sum_bits = checker_bits(data_num)
+record_cipher(data_bits, sum_bits)

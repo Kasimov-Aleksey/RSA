@@ -67,6 +67,14 @@ def record_cipher(data_bits, sum_bits):
     while data_bytes[0] == 0:
         print(data_bits)
         data_bytes = data_bytes[1:]
+
+    for _ in data_bytes[:]:
+        if data_bytes[0] == 0:
+            data_bytes = data_bytes[1:]
+        if data_bytes[-1] == 0:
+            data_bytes = data_bytes[:-1]
+
+
     with open("decrypt_text.txt", "wb") as output_text:
         output_text.write(data_bytes)
 
