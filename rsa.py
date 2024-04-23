@@ -3,7 +3,7 @@ from sympy import randprime
 import math
 data_rsa ={}
 def generating_prime_numbers_and_test_Fermat(variables, data_rsa):
-    bits = 10
+    bits = 2048
     t = math.ceil(-(math.log(0.0001, 2)))
     list_test_t = []
     while True:

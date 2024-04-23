@@ -8,8 +8,9 @@ def calling_key_generation():
     with open("public_key") as public_key:
         public_key = public_key.readlines()
         for key in public_key:
-            data_keys.append(int(key[:-1]))
-            data_keys.append(len(bin(int(key[2:]))))
+            data_keys.append(int(key))
+            print(bin(int(key))[2:])
+            data_keys.append(len(bin(int(key))[2:]))
     return data_keys
 
 
