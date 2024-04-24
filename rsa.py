@@ -3,7 +3,7 @@ from sympy import randprime
 import math
 data_rsa ={}
 def generating_prime_numbers_and_test_Fermat(variables, data_rsa):
-    bits = 8
+    bits = 2048
     t = math.ceil(-(math.log(0.0001, 2)))
     list_test_t = []
     while True:
@@ -81,6 +81,21 @@ def public_key(data_keys):
         for key in data_keys["public_key"]:
             public_key.write(str(key) + "\n")
 
+
+def check(data_keys):
+    x = 7
+    e = data_keys["public_key"][0]
+    d = data_keys["private_key"][0]
+    mod = data_keys["private_key"][1]
+    # print(e, d, mod)
+    y = pow(x,e,mod)
+    z = pow(y,d,mod)
+    # print(x)
+    # print(z)
+    if bool(x!=z):
+        key()
+    return bool(x == z)
+
 def key():
     # 1
     p = generating_prime_numbers_and_test_Fermat("p", data_rsa)
@@ -97,6 +112,6 @@ def key():
     data_keys = generating_key(data_rsa)
     privat_key(data_keys)
     public_key(data_keys)
-    return data_keys
+    check(data_keys)
 
-data_keys = key()
+key()

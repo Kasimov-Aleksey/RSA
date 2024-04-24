@@ -1,90 +1,57 @@
 import math
 
-
-def calling_privat_key_generation():
+def calling_key_private():
     data_keys = []
-    with open("private_key") as public_key:
-        public_key = public_key.readlines()
-        for key in public_key:
+    with open("private_key") as file:
+        private_key = file.readlines()
+        for key in private_key:
             data_keys.append(int(key[:-1]))
-    # print({
-    #     'private_key': data_keys[0],
-    #     'modulus': data_keys[1],
-    #     'private_key_length': len(bin(data_keys[0])[2:]),
-    #     'modulus_length': len(bin(data_keys[1])[2:])
-    # })
     return data_keys
 
-def get_len_block(data_keys):
-    len_block = int(math.log(data_keys[1], 2))
-    print({
-        'len_block': len_block
-    })
-    return len_block
 
-def splitting_into_bits(len_block):
-    data_blocks_text = []
-    with open("cipher_text.txt", "rb") as cipher_text:
-        cipher_text = cipher_text.read()
-    bits = ''.join(format(byte, '08b') for byte in cipher_text)
-    while len(bits) > 0:
-        data_blocks_text.append(int(bits[-len_block:], 2))
-        bits = bits[:-len_block]
-    return data_blocks_text
+def decrypt_block(open_text_block, public_key, module, block_size):
+    block_int = int(open_text_block, 2)
+    block_int = pow(block_int, public_key, module)
+    block_encrypt_bin = bin(block_int)[2:].zfill(block_size)
 
-def decryptor(data_keys, data_blocks_text):
-    data_num = []
-    for num in data_blocks_text:
-        data_num.append(pow(num, data_keys[0], data_keys[1]))
-    # print(data_num)
-    return data_num
+    return block_encrypt_bin
+def decrypt(data_keys, cipher_text):
+    with open(cipher_text, "rb") as file:
+        cipher_text = file.read()
 
+    private_key = data_keys[0]
+    module = data_keys[1]
+    cipher_text_bin = bin(int.from_bytes(cipher_text, byteorder="big", signed=False))[2:]
+    block_size = math.floor(math.log(module, 2))
+    block_size_extended = block_size + 1
+    blocks_count = math.ceil(len(cipher_text_bin) / block_size_extended)
 
-def checker_bits(data_num):
-    sum_bits = 0
-    for bits in data_num:
-        bit = bin(bits)[2:].zfill(len_block)
-        sum_bits += math.ceil(len(bit)/8)
-    return sum_bits
+    decrypted_text_bin = ""
 
+    for i in range(1, blocks_count + 1):
+        begin = -(i * block_size_extended)
+        finish = -(i * block_size_extended - block_size_extended)
 
+        if not finish:
+            finish = None
 
+        print(cipher_text_bin[begin:finish])
+        decrypted_block_bin = decrypt_block(cipher_text_bin[begin:finish], private_key, module, block_size)
+        decrypted_text_bin = decrypted_block_bin + decrypted_text_bin
 
+    decrypted_text_int = int(decrypted_text_bin, 2)
+    _len = math.ceil(len(decrypted_text_bin) / 8)
+    decrypted_text_bytes = bytearray(int.to_bytes(decrypted_text_int, length=_len, byteorder="big", signed=False))
 
-def bits_plus_zero(data_num):
-    data_bits = []
-    for bits in data_num:
-        bit = bin(bits)[2:].zfill(len_block)
-        data_bits.append(bit)
-        # print(len(bit))
-    return data_bits
+    for index, i in enumerate(decrypted_text_bytes):
+        if i != 0:
+            decrypted_text_bytes = decrypted_text_bytes[index:]
+            break
 
-def record_cipher(data_bits, sum_bits):
-    data_bits = "".join(data_bits)
-    data_int = int(data_bits, 2)
-    data_bytes = int.to_bytes(data_int, sum_bits, byteorder='big', signed=True)
-    print(data_bytes[0] == 0)
-    while data_bytes[0] == 0:
-        print(data_bits)
-        data_bytes = data_bytes[1:]
+    with open("decrypted_text.txt", "wb") as file:
+        file.write(decrypted_text_bytes)
 
-    for _ in data_bytes[:]:
-        if data_bytes[0] == 0:
-            data_bytes = data_bytes[1:]
-        if data_bytes[-1] == 0:
-            data_bytes = data_bytes[:-1]
-
-
-    with open("decrypt_text.txt", "wb") as output_text:
-        output_text.write(data_bytes)
-
-
-data_privat_key = calling_privat_key_generation()
-len_block_full = get_len_block(data_privat_key) + 1
-len_block = get_len_block(data_privat_key)
-data_blocks_text = splitting_into_bits(len_block_full)
-data_num = decryptor(data_privat_key, data_blocks_text)
-data_bits = bits_plus_zero(data_num)
-sum_bits = checker_bits(data_num)
-record_cipher(data_bits,sum_bits)
-print(sum_bits)
+decrypt(
+    calling_key_private(),
+    "encrypted_text.txt"
+)

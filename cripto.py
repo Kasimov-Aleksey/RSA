@@ -1,83 +1,53 @@
 import math
 
-
-def calling_key_generation():
+def calling_key_public():
     data_keys = []
     with open("public_key") as public_key:
         public_key = public_key.readlines()
         for key in public_key:
             data_keys.append(int(key[:-1]))
-    print({
-        'public_key': data_keys[0],
-        'modulus': data_keys[1],
-        'public_key_length': len(bin(data_keys[0])[2:]),
-        'modulus_length': len(bin(data_keys[1])[2:])
-    })
     return data_keys
 
+def encrypt_block(open_text_block, public_key, module, block_size):
+    block_int = int(open_text_block, 2)
+    block_int = pow(block_int, public_key, module)
+    block_encrypt_bin = bin(block_int)[2:].zfill(block_size)
 
-def get_len_block(data_keys):
-    len_block = int(math.log(data_keys[1], 2))
-    print({
-        'len_block': len_block
-    })
-    return len_block
+    return block_encrypt_bin
 
+def encrypt(data_keys, open_text):
+    with open(open_text, "rb") as file:
+        open_text = file.read()
 
-def splitting_into_bits(len_block):
-    data_blocks_text = []
-    with open("input_text", "rb") as input_text:
-        input_text = input_text.read()
-    bits = ''.join(format(byte, '08b') for byte in input_text)
-    while len(bits) > 0:
-        add_bin = bits[-len_block:]
-        add_bit = int(add_bin, 2)
-        data_blocks_text.append(add_bit)
-        bits = bits[:-len_block]
-    return data_blocks_text
+    public_key = data_keys[0]
+    module = data_keys[1]
+    open_text_bin = bin(int.from_bytes(open_text, byteorder="big", signed=False))[2:]
+    block_size = math.floor(math.log(module, 2))
+    block_size_extended = block_size + 1
+    blocks_count = math.ceil(len(open_text_bin)/block_size)
 
+    encrypted_text_bin = ""
 
-def mod(data_keys, data_blocks_text):
-    data_num = []
-    for num in data_blocks_text:
-        enc_block_int = pow(num, data_keys[0], data_keys[1])
-        data_num.append(enc_block_int)
-    return data_num
+    for i in range(1, blocks_count + 1):
+        begin = -(i * block_size)
+        finish = -(i * block_size - block_size)
 
+        if not finish:
+            finish = None
 
-def bits_plus_zero(data_num):
-    data_bits = []
-    for bits in data_num:
-        bit = bin(bits)[2:].zfill(len_block_full)
-        print(len(bit))
-        data_bits.append(bit)
+        print(open_text_bin[begin:finish])
+        encrypted_block_bin = encrypt_block(open_text_bin[begin:finish], public_key, module, block_size_extended)
+        encrypted_text_bin = encrypted_block_bin + encrypted_text_bin
 
-    return data_bits
+    encrypted_text_int = int(encrypted_text_bin, 2)
+    _len = math.ceil(len(encrypted_text_bin) / 8)
+    encrypted_text_bytes = bytearray(int.to_bytes(encrypted_text_int, length=_len, byteorder="big", signed=False))
 
-def checker_bits(data_num):
-    sum_bits = 0
-    for bits in data_num:
-        bit = bin(bits)[2:].zfill(len_block)
-        sum_bits += math.ceil(len(bit)/8)
-    print(sum_bits)
-    return sum_bits
+    with open("encrypted_text.txt", "wb") as file:
+        file.write(encrypted_text_bytes)
 
 
-
-
-def record_cipher(data_bits, sum_bits):
-    data_bits = "".join(data_bits)
-    data_int = int(data_bits, 2)
-    data_bytes = int.to_bytes(data_int, sum_bits, byteorder='big', signed=True)
-    with open("cipher_text.txt", "wb") as output_text:
-        output_text.write(data_bytes)
-
-
-data_keys = calling_key_generation()
-len_block = get_len_block(data_keys)
-len_block_full = get_len_block(data_keys) + 1
-data_blocks_text = splitting_into_bits(len_block)
-data_num = mod(data_keys, data_blocks_text)
-data_bits = bits_plus_zero(data_num)
-sum_bits = checker_bits(data_num)
-record_cipher(data_bits, sum_bits)
+encrypt(
+    calling_key_public(),
+    "input_text"
+)
