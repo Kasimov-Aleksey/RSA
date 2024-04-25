@@ -1,30 +1,32 @@
 import math
 
 def calling_key_private():
+    # Функция для загрузки закрытого ключа из файла "private_key"
     data_keys = []
     with open("private_key") as file:
         private_key = file.readlines()
         for key in private_key:
-            data_keys.append(int(key[:-1]))
+            data_keys.append(int(key[:-1]))  # Загружаем ключи из файла в список
     return data_keys
 
-
 def decrypt_block(open_text_block, public_key, module, block_size):
-    block_int = int(open_text_block, 2)
-    block_int = pow(block_int, public_key, module)
-    block_encrypt_bin = bin(block_int)[2:].zfill(block_size)
-
+    # Функция для расшифрования блока текста
+    block_int = int(open_text_block, 2)  # Преобразуем текст в целое число
+    block_int = pow(block_int, public_key, module)  # Дешифруем блок
+    block_encrypt_bin = bin(block_int)[2:].zfill(block_size)  # Преобразуем расшифрованный блок в бинарную строку
     return block_encrypt_bin
-def decrypt(data_keys, cipher_text):
-    with open(cipher_text, "rb") as file:
-        cipher_text = file.read()
 
-    private_key = data_keys[0]
-    module = data_keys[1]
-    cipher_text_bin = bin(int.from_bytes(cipher_text, byteorder="big", signed=False))[2:]
-    block_size = math.floor(math.log(module, 2))
-    block_size_extended = block_size + 1
-    blocks_count = math.ceil(len(cipher_text_bin) / block_size_extended)
+def decrypt(data_keys, cipher_text):
+    # Функция для расшифрования всего текста
+    with open(cipher_text, "rb") as file:
+        cipher_text = file.read()  # Читаем зашифрованный текст из файла
+
+    private_key = data_keys[0]  # Загружаем закрытый ключ
+    module = data_keys[1]  # Загружаем модуль
+    cipher_text_bin = bin(int.from_bytes(cipher_text, byteorder="big", signed=False))[2:]  # Преобразуем текст в бинарную строку
+    block_size = math.floor(math.log(module, 2))  # Вычисляем размер блока
+    block_size_extended = block_size + 1  # Увеличиваем размер блока на единицу для безопасности
+    blocks_count = math.ceil(len(cipher_text_bin) / block_size_extended)  # Вычисляем количество блоков
 
     decrypted_text_bin = ""
 
@@ -35,13 +37,12 @@ def decrypt(data_keys, cipher_text):
         if not finish:
             finish = None
 
-        print(cipher_text_bin[begin:finish])
-        decrypted_block_bin = decrypt_block(cipher_text_bin[begin:finish], private_key, module, block_size)
+        decrypted_block_bin = decrypt_block(cipher_text_bin[begin:finish], private_key, module, block_size)  # Расшифруем блок текста
         decrypted_text_bin = decrypted_block_bin + decrypted_text_bin
 
-    decrypted_text_int = int(decrypted_text_bin, 2)
-    _len = math.ceil(len(decrypted_text_bin) / 8)
-    decrypted_text_bytes = bytearray(int.to_bytes(decrypted_text_int, length=_len, byteorder="big", signed=False))
+    decrypted_text_int = int(decrypted_text_bin, 2)  # Преобразуем расшифрованный текст в целое число
+    _len = math.ceil(len(decrypted_text_bin) / 8)  # Вычисляем длину текста в байтах
+    decrypted_text_bytes = bytearray(int.to_bytes(decrypted_text_int, length=_len, byteorder="big", signed=False))  # Преобразуем расшифрованный текст в байтовый массив
 
     for index, i in enumerate(decrypted_text_bytes):
         if i != 0:
@@ -49,9 +50,9 @@ def decrypt(data_keys, cipher_text):
             break
 
     with open("decrypted_text.txt", "wb") as file:
-        file.write(decrypted_text_bytes)
+        file.write(decrypted_text_bytes)  # Записываем расшифрованный текст в файл
 
 decrypt(
-    calling_key_private(),
-    "encrypted_text.txt"
+    calling_key_private(),  # Загрузка закрытого ключа
+    "encrypted_text.txt"  # Имя файла с зашифрованным текстом
 )
