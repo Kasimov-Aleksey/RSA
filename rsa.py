@@ -47,9 +47,9 @@ def the_Euler_function_of_n(data_rsa):
     return data_rsa
 
 def evklid(data_rsa):
-    data = [data_rsa["e"], data_rsa["φ(n)"]]
+    data = [data_rsa["e"], data_rsa["φ(n)"]] # pow(data_rsa["e"], -1, data_rsa["φ(n)"]
     a, b = max(data), min(data)
-    q, r, x = "-", "-", "-"
+    q, r, x, y = "-", "-", "-", "-"
     x2, x1, y2, y1 = 1, 0, 0, 1
     while True:
         while b != 0:
