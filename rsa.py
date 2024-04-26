@@ -2,10 +2,8 @@ from random import randint
 from sympy import randprime
 import math
 
-data_rsa = {}  # Словарь для хранения данных RSA
 
-def generating_prime_numbers_and_test_Fermat(variables, data_rsa):
-    bits = 2048
+def generating_prime_numbers_and_test_Fermat(variables, data_rsa, bits = 8):
     t = math.ceil(-(math.log(0.0001, 2)))  # Вычисляем t для теста Ферма
     list_test_t = []  # Создаем список для хранения случайных чисел для теста Ферма
     while True:
@@ -79,15 +77,15 @@ def generating_key(data_rsa):
     data_keys["private_key"] = (data_rsa["d"], data_rsa["n"])
     return data_keys
 
-def privat_key(data_keys):
+def privat_key(data_keys, name_private_key):
     # Записываем закрытый ключ в файл "private_key"
-    with open("private_key", "w") as privat_key:
+    with open(name_private_key, "w") as privat_key:
         for key in data_keys["private_key"]:
             privat_key.write(str(key) + "\n")
 
-def public_key(data_keys):
+def public_key(data_keys, name_public_key):
     # Записываем открытый ключ в файл "public_key"
-    with open("public_key", "w") as public_key:
+    with open(name_public_key, "w") as public_key:
         for key in data_keys["public_key"]:
             public_key.write(str(key) + "\n")
 
@@ -103,17 +101,18 @@ def check(data_keys):
         key()
     return bool(x == z)
 
-def key():
+def key(bits = 8, name_private_key= "private_key", name_public_key="public_key"):
+    data_rsa = {}  # Словарь для хранения данных RSA
     # Генерируем ключи RSA
-    p = generating_prime_numbers_and_test_Fermat("p", data_rsa)
-    q = generating_prime_numbers_and_test_Fermat("q", data_rsa)
+    p = generating_prime_numbers_and_test_Fermat("p", data_rsa, bits)
+    q = generating_prime_numbers_and_test_Fermat("q", data_rsa, bits)
     n = the_product_the_product_of_two_numbers_qp(data_rsa)
     φ_from_n = the_Euler_function_of_n(data_rsa)
-    e = generating_prime_numbers_and_test_Fermat("e", data_rsa)
+    e = generating_prime_numbers_and_test_Fermat("e", data_rsa, bits)
     d = evklid(data_rsa)
     data_keys = generating_key(data_rsa)
-    privat_key(data_keys)
-    public_key(data_keys)
+    privat_key(data_keys, name_private_key)
+    public_key(data_keys, name_public_key)
     check(data_keys)
 
 key()  # Запускаем процесс генерации ключей

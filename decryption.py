@@ -1,9 +1,9 @@
 import math
 
-def calling_key_private():
+def calling_key_private(name_private_key):
     # Функция для загрузки закрытого ключа из файла "private_key"
     data_keys = []
-    with open("private_key") as file:
+    with open(name_private_key) as file:
         private_key = file.readlines()
         for key in private_key:
             data_keys.append(int(key[:-1]))  # Загружаем ключи из файла в список
@@ -48,11 +48,15 @@ def decrypt(data_keys, cipher_text):
         if i != 0:
             decrypted_text_bytes = decrypted_text_bytes[index:]
             break
+    return decrypted_text_bytes
+
+def record_decrypted_text():
+    decrypted_text_bytes = decrypt(
+        calling_key_private(name_private_key="private_key"),  # Загрузка закрытого ключа
+        "encrypted_text.txt"  # Имя файла с зашифрованным текстом
+    )
 
     with open("decrypted_text.txt", "wb") as file:
         file.write(decrypted_text_bytes)  # Записываем расшифрованный текст в файл
 
-decrypt(
-    calling_key_private(),  # Загрузка закрытого ключа
-    "encrypted_text.txt"  # Имя файла с зашифрованным текстом
-)
+record_decrypted_text()
